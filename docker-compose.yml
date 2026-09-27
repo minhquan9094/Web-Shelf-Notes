@@ -1,0 +1,26 @@
+services:
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    ports:
+      - "11235:11235"
+    shm_size: "1gb"
+    environment:
+      CRAWL4AI_API_TOKEN: ${CRAWL4AI_API_TOKEN:?set CRAWL4AI_API_TOKEN}
+    restart: unless-stopped
+
+  shelf:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DATA_DIR: /data
+      CRAWL4AI_URL: http://crawl4ai:11235
+      CRAWL4AI_API_TOKEN: ${CRAWL4AI_API_TOKEN:?set CRAWL4AI_API_TOKEN}
+    volumes:
+      - shelf-data:/data
+    depends_on:
+      - crawl4ai
+    restart: unless-stopped
+
+volumes:
+  shelf-data:

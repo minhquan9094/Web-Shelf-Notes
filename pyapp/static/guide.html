@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crawl guide · Shelf Notes</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560&family=Outfit:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="wrap bar-inner">
+        <p class="word">Crawl guide</p>
+        <a class="pill" href="/">Back to shelf</a>
+      </div>
+    </header>
+    <article class="wrap prose" style="padding:2rem 0 3rem">
+      <h1>Python app + Crawl4AI in Docker Compose</h1>
+      <p class="lead">Shelf Notes is the Python service. Crawl4AI is a second container. Compose starts both. The shelf calls Crawl4AI’s <code>/md</code> endpoint for one URL at a time.</p>
+      <h2>Start both</h2>
+      <pre>export CRAWL4AI_API_TOKEN="$(openssl rand -hex 32)"
+docker compose up -d</pre>
+      <p>Shelf is on port 8080. Crawl4AI is on 11235. The token is shared so the crawler accepts the shelf’s requests.</p>
+      <h2>What Crawl URL does</h2>
+      <p>The button posts the URL to this app. This app posts it to <code>CRAWL4AI_URL/md</code> with <code>Authorization: Bearer</code>. The markdown comes back, prices and place are extracted, and you save the card into SQLite.</p>
+      <h2>Without Docker</h2>
+      <pre>pip install -r requirements.txt
+export CRAWL4AI_URL=http://127.0.0.1:11235
+export CRAWL4AI_API_TOKEN=your-token
+uvicorn app:app --app-dir pyapp --host 0.0.0.0 --port 8080</pre>
+      <p>If Crawl4AI is down, paste page text and use Extract. Import still accepts <code>{"url","markdown"}</code> or a list of those objects.</p>
+      <h2>Data</h2>
+      <p>SQLite lives in the <code>shelf-data</code> volume at <code>/data/shelf.db</code>. It is not wiped when the container restarts.</p>
+    </article>
+  </body>
+</html>

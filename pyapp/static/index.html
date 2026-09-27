@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shelf Notes</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560&family=Outfit:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="wrap bar-inner">
+        <div>
+          <p class="word">Shelf Notes</p>
+          <p class="sub">Python app. Crawl4AI fills the card. You keep the note.</p>
+        </div>
+        <a class="pill" href="/guide">Crawl guide</a>
+      </div>
+    </header>
+    <main class="wrap layout">
+      <section>
+        <div class="row">
+          <label class="search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6f675e" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+            <input id="q" placeholder="Search title, shop, place" />
+          </label>
+          <div class="row" id="filters"></div>
+        </div>
+        <p id="banner" class="banner" hidden></p>
+        <div id="list"></div>
+        <article id="detail" class="detail card" hidden></article>
+      </section>
+      <aside class="panel" style="padding:1rem">
+        <h2>New card</h2>
+        <p class="sub">One public URL through Crawl4AI, or paste the page text.</p>
+        <label class="field">Page URL
+          <input id="url" placeholder="https://shop.example/product" />
+        </label>
+        <div class="actions">
+          <button class="primary" id="crawl" type="button">Crawl URL</button>
+          <button class="outline" id="sample" type="button">Try a sample</button>
+        </div>
+        <label class="field">Page text
+          <textarea id="raw" rows="8" placeholder="Markdown from Crawl4AI, or copied page text"></textarea>
+        </label>
+        <button class="outline" id="extract" type="button">Extract from text</button>
+        <div id="draft"></div>
+        <div class="actions" style="border-top:1px solid var(--line);padding-top:1rem">
+          <button class="outline" id="export" type="button">Export</button>
+          <label class="outline file">Import JSON
+            <input id="import" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+      </aside>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

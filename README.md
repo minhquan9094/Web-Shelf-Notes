@@ -1,37 +1,40 @@
 # Shelf Notes
 
-A browser desk for product listings. You crawl a normal public page with [Crawl4AI](https://github.com/unclecode/crawl4ai), then import the JSON or paste the markdown. Cards stay in this browser (local storage). There is no account and no server-side crawl.
+Python service for product-page notes, plus Crawl4AI in Docker Compose.
 
-## In the app
+The shelf stores cards in SQLite. **Crawl URL** sends one public `http(s)` address to the Crawl4AI container (`POST /md`) and files the markdown. Paste still works if the crawler is down.
 
-1. Open **New card**, paste page text, optionally set the URL, then **Extract** and **Save card**.
-2. Or use **Import JSON** with the file produced below.
-3. Filter by status (`new`, `watching`, `bought`, `pass`) and search title, shop, or place.
-4. **Export** writes `shelf-notes.json`.
-
-The same steps are on the in-app **Crawl guide**.
-
-## Crawl4AI
+## Compose
 
 ```bash
-pip install -U crawl4ai
-crawl4ai-setup
-python crawler/crawl_one.py "https://shop.example.com/oak-line-desk-lamp" > page.json
+export CRAWL4AI_API_TOKEN="$(openssl rand -hex 32)"
+docker compose up -d
 ```
 
-`crawler/crawl_one.py` fetches **one URL** and prints:
+- Shelf: [http://localhost:8080](http://localhost:8080)
+- Crawl4AI: port `11235` (token required)
+- Database: Docker volume `shelf-data` → `/data/shelf.db`
+
+`docker compose` pulls `unclecode/crawl4ai:latest` and builds the shelf image from the `Dockerfile`.
+
+## Without Docker
+
+```bash
+pip install -r requirements.txt
+# optional, if Crawl4AI is already running locally
+export CRAWL4AI_URL=http://127.0.0.1:11235
+export CRAWL4AI_API_TOKEN=your-token
+uvicorn app:app --app-dir pyapp --host 0.0.0.0 --port 8080
+```
+
+## Import shape
 
 ```json
 { "url": "https://shop.example.com/oak-line-desk-lamp", "markdown": "..." }
 ```
 
-A JSON array of those objects imports as multiple cards. Fields read from the text:
+A JSON array of those objects imports as several cards.
 
-| Field | How |
-|---|---|
-| Title | First substantial line or heading |
-| Price | `$`, `€`, `£`, `₫` / `VND`, or `200k` |
-| Place | A line labeled location, ships from, address, city, seller, or store |
-| Contacts | Emails and phone numbers printed on the page |
+Extracted fields: title, `$` / `€` / `£` / `₫` prices, a location or “ships from” line, emails, and phone numbers printed on the page.
 
-Crawl4AI runs on your machine. The web app only reads what you paste or import. Respect each site’s terms and robots rules, and stay on pages you are allowed to access.
+One URL per crawl. Stay on pages you are allowed to fetch.
